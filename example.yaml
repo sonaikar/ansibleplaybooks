@@ -1,0 +1,164 @@
+##Managing Software and Subscriptions
+#
+##The yum Ansible module uses the Yum Package Manager on the managed hosts to handle the
+##package operations
+#
+#- name: Install httpd
+#  hosts: all
+#  tasks:
+#  - name: Install httpd   #yum install httpd
+#    yum:
+#     name: httpd
+#     state: present
+#  - name: Install or update httpd # yum update httpd
+#    yum:
+#     name: httpd
+#     state: latest
+#  - name: Update all packages # yum update
+#    yum:
+#     name: '*'
+#     state: latest
+#  - name: Remove httpd # yum remove httpd
+#    yum:
+#     name: httpd
+#     state: absent
+#
+#- name: Install the required packages on the web server  # yum install httpd mod_ssl httpd-tools
+#  hosts: all
+#  tasks:
+#  - name: Install the packages
+#    yum:
+#     name:
+#      - httpd
+#      - mod_ssl
+#      - httpd-tools
+#     state: present
+#
+#
+## or you can use loop
+#
+#- name: Install the required packages on the web server
+#  hosts: all
+#  tasks:
+#  - name: Install the packages
+#    yum:
+#      name: "{{ item }}""
+#      state: present
+#    loop:
+#     - httpd
+#     - mod_ssl
+#     - httpd-tools
+#
+## Gathering Facts about Installed Packages
+##The package_facts Ansible module collects the installed package details on managed hosts. It
+##sets the ansible_facts.packages variable with the package details.
+#
+#- name: Display installed packages
+#  hosts: all
+#  tasks:
+#  - name: Gather info on installed packages
+#    package_facts:
+#     manager: auto
+#  - name: List installed packages
+#    debug:
+#      var: ansible_facts.packages
+#  - name: Display NetworkManager version
+#    debug:
+#      msg: "Version {{ansible_facts.packages['NetworkManager'][0].version}}"
+#    when: "'NetworkManager' in ansible_facts.packages"
+
+##Reviewing Alternative Modules to Manage Packages
+- name: Install the required packages on the web servers
+  hosts: all
+  tasks:
+#  - name: Install httpd on RHEL
+#    yum:
+#     name: httpd
+#     state: present
+#    when: "ansible_distribution == 'RedHat'"
+#  - name: Install httpd on RedHat
+#    dnf:
+#     name: httpd
+#     state: present
+#    when: "ansible_distribution == 'RedHat'"
+#  - name: Install httpd
+#    package:
+#     name: httpd
+#     state: present
+
+## Registering and Subscribing New systems
+##subscription-manager register --username=yourusername --password=yourpassword
+## subscription-manager attach --pool=poolID
+#  - name: Register and subscribe the system
+#    redhat_subscription:
+#     username: diksha_rh
+#     password: CatchMeIfYouCan
+#     pool_ids: 8a85f99a710f3ae901714ff4281c06a9
+#     state: present
+
+## Enabling Red Hat Software Repositories
+##subscription-manager repos \
+##enable "rhel-8-for-x86_64-baseos-rpms" \
+##enable "rhel-8-for-x86_64-baseos-debug-rpms"
+#  - name: Enable Red Hat repositories
+#    rhsm_repository:
+#     name:
+#      - ansible-2-for-rhel-8-x86_64-rpms
+#      - rhel-8-for-x86_64-rt-rpms
+#     state: present
+
+## Configuring a Yum Repository
+#
+#  - name: Ensure Example Repo exists
+#    yum_repository:
+#     file: example
+#     name: example-internal
+#     description: Example Inc. Internal YUM repo
+#     baseurl: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+#     enabled: yes
+#     gpgcheck: yes
+#     state: present
+#  - name: Deploy the GPG public key
+#    rpm_key:
+#     key: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
+#     state: present
+#
+## Managing Users and Authentication
+  - name: Add new user to the development machine and assign the appropriate groups.
+    user:
+     name: devops_user
+     shell: /bin/bash
+     groups: sys_admins, developers
+     append: yes
+
+  - name: Create a SSH key for user1
+    user:
+     name: user1
+     generate_ssh_key: yes
+     ssh_key_bits: 2048
+     ssh_key_file: .ssh/id_my_rsa
+  - name: Verify that auditors group exists
+    group:
+     name: auditors
+     state: present
+
+  - name: remove tempuser.
+   at:
+     command: userdel -r tempuser
+     count: 20
+     units: minutes
+     unique: yes
+
+  - cron:
+     name: "Flush Bolt"
+     user: "root"
+     minute: 45
+     hour: 11
+     job: "php ./app/nut cache:clear"
+
+  - name: "Reboot after patching"
+    reboot:
+      reboot_timeout: 180
+
+  - name: force a quick reboot
+    reboot:
