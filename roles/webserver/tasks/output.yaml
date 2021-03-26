@@ -1,0 +1,6 @@
+- name: print output of webserver
+  command: curl http://localhost:8877
+  register: output
+
+- debug:
+    msg: "{{ output.stdout }}"

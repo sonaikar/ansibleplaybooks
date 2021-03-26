@@ -1,0 +1,7 @@
+- name: gatgering facts
+  hosts: all
+  tasks: 
+   - name : priniting msg
+     debug:
+        msg: "date is {{ ansible_facts['date_time']['date'] }}"
+             #msg: ip address of {{ ansible_facts.hostname }} is {{ ansible_facts.default_ipv4.address }}

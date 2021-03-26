@@ -1,0 +1,16 @@
+web.example.com
+db.example.com
+192.168.1.10
+192.168.1.11
+
+[lab]
+lab1.example.com
+lab2.example.com
+
+[datacenter1]
+host1.example.com
+host2.example.com
+
+[datacenter2]
+d_host1.example.com
+d_host2.example.com

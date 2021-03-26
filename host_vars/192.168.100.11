@@ -1,0 +1,7 @@
+users:
+  user1: 
+    name: webserver6
+    comment: webserver user6
+  user2: 
+    name: webserver7
+    comment: webserver user7

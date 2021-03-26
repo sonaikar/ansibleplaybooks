@@ -1,0 +1,193 @@
+#---
+#- name: stat module tests
+#  hosts: all
+#  tasks:
+#  - stat:
+#      path: /etc/hosts
+#    register: st
+#
+#  - name: show current values
+#    debug:
+#      msg: current value of the st variable is {{ st }}
+#
+#  - fail:
+#      msg: "unexpected file mode, should be set to 0640"
+#    when: st.stat.mode != '0644'
+#...
+#
+#---
+#- name: stat module tests
+#  hosts: all
+#  tasks:
+#    - name: Create a file
+#      command: touch /tmp/statfile
+#
+#    - name: Check stats of a file
+#      stat:
+#        path: /tmp/statfile
+#      register: st
+#
+#    - name: show current values
+#      debug:
+#        msg: current value of the st variable is {{ st }}
+#
+#    - name: changing file permissions if that’s needed
+#      file:
+#        path: /tmp/statfile
+#        mode: 0640
+#      when: st.stat.mode != '0640'
+#...
+#
+#---
+#- name: configuring SSH
+#  hosts: all
+#  tasks:
+#    - name: disable root SSH login
+#      lineinfile:
+#        dest: /etc/ssh/sshd_config
+#        regexp: "^PermitRootLogin"
+#        line: "PermitRootLogin yes"
+#      notify: restart sshd
+#
+#  handlers:
+#  - name: restart sshd
+#    service:
+#      name: sshd
+#      state: restarted
+#...
+
+#---
+#- name: modifying file
+#  hosts: all
+#  tasks:
+#    - name: ensure /tmp/hosts exists
+#      file:
+#        path: /tmp/hosts2
+#        state: touch
+#
+#    - name: add some lines to /tmp/hosts
+#      blockinfile:
+#        path: /tmp/hosts2
+#        block: |
+#          192.168.4.110 host1.example.com
+#          192.168.4.120 host2.example.com
+#          192.168.4.120 host2.example.com
+#          192.168.4.120 host2.example.com
+#          192.168.4.120 host2.example.com
+#          192.168.4.120 host2.example.com
+#        state: present
+#...
+
+
+#---
+#- name: using the file module
+#  hosts: all
+#  tasks:
+#    - name: create directory
+#      file:
+#        path: /newdir
+#        owner: vagrant
+#        group: vagrant
+#        mode: 770
+#        state: directory
+#
+#    - name: create file in that directory
+#      file:
+#        path: /newdir/newfile
+#        state: touch
+#
+#    - name: show the new file
+#      stat:
+#        path: /newdir/newfile
+#      register: result
+#
+#    - debug:
+#        msg: |
+#          This shows that newfile was created "{{ result }}"
+#
+#    - name: removing everything again
+#      file:
+#        path: /newdir
+#        state: absent
+#        recurse: yes
+#...
+
+
+#---
+#- name: file copy modules
+#  hosts: all
+#  tasks:
+#    - name: copy file demo
+#      copy:
+#        src: /etc/hosts
+#        dest: /tmp/
+#
+#    - name: add some lines to /tmp/hosts
+#      blockinfile:
+#        path: /tmp/hosts
+#        block: |
+#          192.168.4.110 host1.example.com
+#          192.168.4.120 host2.example.com
+#        state: present
+#
+#    - name: verify file checksum
+#      stat:
+#        path: /tmp/hosts
+#        checksum_algorithm: md5
+#      register: result
+#
+#    - debug:
+#        msg: "The checksum of /tmp/hosts is {{ result.stat.checksum }}"
+#
+#    - name: fetch a file
+#      fetch:
+#        src: /tmp/hosts
+#        dest: /tmp/
+#
+#
+#- name: file copy modules
+#  hosts: all
+#  ignore_errors: yes
+#  tasks:
+#    - name: Install rsync
+#      yum:
+#        name: rsync
+#        state: present
+#
+#    - name: Create a diretory backup
+#      file:
+#        path: /tmp/backup
+#        state: directory
+#
+#    - name: synchronize the file
+#      synchronize:
+#        src: /tmp
+#        dest: /tmp/backup
+#
+#...
+
+
+#---
+#- name: restart sshd only if crond is running
+#  hosts: all
+#  tasks:
+#  - name: Inactivate service
+#    service:
+#      name: "{{ item }}"
+#      state: stopped
+#    loop:
+#      - crond
+#      - chronyd
+#
+#  - name: get the crond server status
+#    command: /usr/bin/systemctl is-active crond
+#    ignore_errors: yes
+#    register: result
+#
+#  - name: restart chronyd based on crond status
+#    service:
+#      name: chronyd
+#      state: restarted
+#    when: result.rc == 0
+#...
+

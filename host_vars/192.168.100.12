@@ -1,0 +1,7 @@
+users:
+  user1: 
+    name: prashant 
+    comment: webserver user prashant
+  user2: 
+    name: vinay
+    comment: webserver user vinay

@@ -1,0 +1,28 @@
+---
+- name: Permissions Administration
+  hosts: all
+  tasks:
+  - name: Create adirectory
+    file:
+     path: /permissions
+     state: directory
+     owner: Robin
+     group: testing
+     mode: '3750'
+     recurse: yes
+  - name: Apply ACL to user oliver
+    acl:
+     path: /permissions
+     entity: oliver
+     etype: user
+     permissions: rwx
+     state: present
+  - name: Apply ACL to group Developer
+    acl:
+     path: /permissions
+     enity: Developer
+     etype: group
+     permissions: r-x
+     state: present
+...
+

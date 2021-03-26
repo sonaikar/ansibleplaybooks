@@ -1,0 +1,39 @@
+---
+- name: create file on localhost
+  hosts: localhost
+  tasks:
+  - name: create index3.html on localhost
+    copy:
+      content: "welcome to the webserver"
+      dest: /tmp/index3.html
+
+- name: set up web server
+  hosts: all
+  force_handlers: yes
+  tasks:
+    - name: Enable firewall for port 80
+      firewalld:
+        service: http
+        permanent: yes
+        state: enabled
+        immediate: yes
+    - name: install httpd
+      yum:
+        name: httpd
+        state: latest
+    - name: copy index3.html
+      copy:
+        src: /tmp/index3.html
+        dest: /var/www/html/index4.html
+      notify:
+        - restart_web
+    - name: copy nothing - intended to fail
+      copy:
+        src: /tmp/nothingisnothing
+        dest: /var/www/html/nothing.html
+
+  handlers:
+  - name: restart_web
+    service:
+      name: httpd
+      state: restarted

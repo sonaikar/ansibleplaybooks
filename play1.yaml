@@ -1,0 +1,31 @@
+---
+- name: My 1st Play
+  hosts: all
+  tasks:
+   - name: 1st task create user
+     user:
+       name: test1
+       state: present
+   - name: 2nd task
+     group:
+        name: admin
+        state: present
+
+- name: 2nd play
+  hosts: 192.168.100.11
+  tasks:
+  - name: Configure firewall
+    firewalld:
+      service: http
+      state: enabled
+      permanent: yes
+  - name: install httpd package
+    yum:
+      name: httpd
+      state: latest
+  - name: start and enable the service
+    service:
+       name: httpd
+       enabled: yes
+       state: started
+...

@@ -1,0 +1,28 @@
+---
+# tasks file for webserver
+- name: Enable firewall for port 8877
+  firewalld:
+    port: 8877/tcp
+    permanent: yes
+    state: enabled
+    immediate: yes
+- name: install vhost config file
+  template:
+     src: vhosts.conf.j2
+     dest: /etc/httpd/conf.d/vhost.conf
+     owner: root
+     group: root
+     mode: 0644
+  notify:
+    - restart_web
+- name: Create Directory
+  file:
+    name: "/var/www/vhosts/{{ ansible_facts['hostname'] }}"
+    state: directory
+- name: copy index.html from template
+  template:
+    src: index.html.j2
+    dest: "/var/www/vhosts/{{ ansible_facts['hostname'] }}/index.html"
+  notify:
+    - restart_web
+

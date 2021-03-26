@@ -1,0 +1,10 @@
+- name: Implementing role webserver
+  hosts: all
+  pre_tasks:
+  - debug:
+       msg: "Installing Apache"
+  roles:
+    - webserver
+  post_tasks:
+  - debug: 
+       msg: "Apache is successfully Insatlled"

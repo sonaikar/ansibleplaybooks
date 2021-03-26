@@ -1,0 +1,16 @@
+---
+- name: User Administration
+  hosts: servers 
+  gather_facts: no
+  tasks:
+  - name: Create a user "{{ users['user1']['name'] }}"
+    user:
+     name: "{{ users['user1']['name'] }}"
+     comment: "{{ users['user1']['comment'] }}"
+     shell: /bin/sh
+    register: output1
+
+  - name: display output
+    debug:
+      msg:  "{{ output1 }}"
+...

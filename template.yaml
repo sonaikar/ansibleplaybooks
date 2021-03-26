@@ -1,0 +1,12 @@
+- name: implementing template
+  hosts: all
+  tasks:
+  - name: copy template file to managed hosts
+    template:
+      src: mytemplate.j2
+      dest: /tmp/hosts
+
+#  - name: copy template file to managed hosts
+#    copy:
+#      src: mytemplate.j2
+#      dest: /tmp/hosts

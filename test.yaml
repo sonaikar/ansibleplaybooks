@@ -1,0 +1,19 @@
+- name: implementing diff host patterns
+  hosts: all
+  hosts: ungrouped
+  hosts: lab
+  hosts: 192.168.1.10
+  hosts: "192.168.1.*"
+  hosts: "*"
+  hosts: "*.example.com"
+  hosts: "datacenter1,production,192.168.1.10"
+  host: *,!lab
+  hosts: localhost
+
+# if you have not mentioned hosts section in yhe playbook in that case we can give the host pattern while executing the playbook.
+
+# ansible-playbook play1.yaml all
+# ansible-playbbok play1.yaml lab
+# ansible-playbbok play1.yaml *
+# ansible-playbbok play1.yaml '*,!lab'
+# ansible-playbbok play1.yaml 'lab,datacenter1,production'

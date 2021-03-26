@@ -1,0 +1,212 @@
+#---
+#- name: Running multiple services
+#  hosts: all
+#  tasks:
+#   - name: running httpd service
+#     service:
+#      name: httpd
+#      state: started
+#   - name: running mariadb service
+#     service:
+#      name: mariadb
+#      state: started
+#...
+#
+#for (i=1,i<=50,i++)
+#total=total+1
+#i=2
+#
+#for i in 1,2,3;
+# echo hello world
+#
+#
+#
+#l=[1,2,3]
+#for i in l:
+#  echo hello world
+##
+#-------------------------------- ---------------------------------------- -----------------------------------------------
+---
+- name: Services are running
+  hosts: all
+  tasks:
+  - name: httpd and mariadb service is runing
+    service:
+     name: "{{ item }}"
+     state: started
+    loops:
+     - crond
+     - chronyd
+     - httpd
+     - nfs
+     - sshd
+
+...
+#
+#-------------------------- --------------------------------------- --------------------------------------
+#
+#
+#---
+#- name: Services are running
+#  hosts: all
+#  vars:
+#   lamp_services:
+#    - crond
+#    - chronyd
+#  tasks:
+#  - name: crond and chronyd service is runing
+#    service:
+#     name: "{{ item }}"
+#     state: started
+#    loop: "{{ lamp_services }}"
+#
+#l=[{name:user1,groups:wheel},{}]
+#------------------------------ ------------------------------ ----------------------------------------------------
+#
+#---
+#- name: Services are running
+#  hosts: all
+#  vars_files:
+#    - vars/main.yaml
+#  tasks:
+#
+#  - name: create group
+#    group:
+#     name: sales
+#     state: present
+#
+#  - name: user exist and are in correct group
+#    user:
+#     name: "{{ item.name }}"
+#     state: present
+#     groups: "{{ item.groups }}"
+#     comment: "{{ item.comment }}"
+#     shell: "{{ item.shell }}"
+#    loop:
+#      "{{ users }}"
+#...
+#--------------------- ------------------------- ----------------------------------
+#---
+#- name: loop register test
+#  gather_facts: no
+#  hosts: 192.168.100.11
+#  tasks:
+#  - name: looping echo task
+#    shell: " echo this is my item: {{ item }}"
+#    loop:
+#     - one
+#     - two
+#    register: echo_result
+#
+#  - name: show echo result variable
+#    debug:
+#     msg: "{{ echo_result }}"
+#...
+#---------------- -------------------------- --------------------------
+#---
+#- name: loop register test
+#  gather_facts: no
+#  hosts: 192.168.100.11
+#  tasks:
+#  - name: looping echo task
+#    shell: " echo this is my item: {{ item }}"
+#    loop:
+#     - one
+#     - two
+#    register: echo_result
+#
+#  - name: show echo result variable
+#    debug:
+#     msg: "Displaying output from std output: {{ item.cmd }}"
+#    loop: "{{ echo_result['results'] }}"
+#...
+#---------------------- ------------------------------------- ------------------
+#---
+#- name: conditional install
+#  hosts: all
+#  tasks:
+#  - name: install apache on Server
+#    yum:
+#     name: "{{ items }}"
+#     state: latest
+#    loop:
+#      - crond
+#      - chronyd
+#    when: (ansible_facts['os_family'] == "RedHat" or ansible_facts['os_family'] == "CentOS")
+#...
+#---------------------- ------------------------ -----------------------------------
+#---
+#- name: check for existence of devices
+#  hosts: all
+#  tasks:
+#  - name: check if /dev/sda exists
+#    debug:
+#     msg: a disk device /dev/sda exists
+#    when: ansible_facts['devices']['sda'] is defined
+#
+#  - name: check if /dev/sdb exists
+#    debug:
+#     msg: a disk device /dev/sdb exists
+#    when: ansible_facts['devices']['sdb'] is defined
+#
+#  - name: dummy test, intended to fail
+#    debug:
+#     msg: Success
+#    when: dummy is not defined
+#...
+#------------------- ------------------------------ ---------------------
+#---
+#- name: conditionals test
+#  hosts: all
+#  tasks:
+#  - name: install vsftpd if sufficient memory available
+#    yum:
+#     name: vsftpd
+#     state: latest
+#    when: ansible_facts['memory_mb']['real']['free'] > 50
+#
+#...
+#--------------------- ---------------------- ------------------------------
+#---
+#- name: testing multiple conditions
+#  hosts: all
+#  tasks:
+#  - name: showing output
+#    debug:
+#     msg: using CentOS 8.1
+#    when: ansible_facts['distribution_version']== "8.1" and ansible_facts['distribution'] =="CentOS"
+#...
+#
+#---------- ------------------------------ ------------
+---
+- name: using multiple conditions
+  hosts: all
+  tasks:
+  - yum:
+     name: httpd
+     state: removed
+    when: >
+     ( ansible_facts['distribution'] == "RedHat" and ansible_facts['memfree_mb'] < 512 )
+      or
+     ( ansible_facts['distribution'] == "CentOS" and ansible_facts['memfree_mb'] < 256 )
+
+...
+#----------------------------- --------------------------------------------
+#---
+#- name: restart sshd service if httpd is running
+#  hosts: ansible1
+#  tasks:
+#  - name: get httpd service status
+#    command: systemctl is-active httpd
+#    ignore_errors: yes
+#    register: result
+#  - name: show result variable contents
+#    debug:
+#     msg: printing contents of the registered varia
+#  - name: restart sshd service
+#    service:
+#     name: sshd
+#     state: restarted
+#    when: result.rc == 0
+#...
+#

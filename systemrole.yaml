@@ -1,0 +1,26 @@
+#- name: System role example
+#  hosts: all
+#  vars:
+#    timesync_ntp_servers:
+#      - hostname: 1.ca.pool.ntp.org
+#        iburst: yes
+#      - hostname: 3.ca.pool.ntp.org
+#        iburst: yes
+#  roles:
+#    - rhel-system-roles.timesync
+
+
+- name:  Setup SELInux policies
+  hosts: all
+  vars:
+    haproxy_frontend_port: 8080
+    haproxy_frontend_name: 'hafrontend'
+    haproxy_frontend_bind_address: '*'
+    haproxy_frontend_mode: 'http'
+#    selinux_state: enforcing
+#    selinux_ports:
+#        - { ports: '8877', proto: 'tcp', setype: 'http_port_t', state: 'present' }
+  roles:
+    - haproxy
+#    - rhel-system-roles.selinux
+#    - webserver

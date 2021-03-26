@@ -1,0 +1,10 @@
+- name: Implementing role webserver
+  hosts: all
+  tasks:
+  - name: creating user
+    user: 
+      name: user1
+      state: present
+  - name: import role
+    import_role:
+      name: webserver
